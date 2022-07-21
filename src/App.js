@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 
 export default function App() {
@@ -6,16 +6,30 @@ export default function App() {
 	const [tasks, setTasks] = useState(['Learn React.js', 'Complete to-do list']);
 	const [input, setInput] = useState('');
 
+	useEffect(() => {
+		const localTasks = localStorage.getItem('tasks');
+
+		if (localTasks) {
+			const parsedTasks = JSON.parse(localTasks);
+			setTasks(parsedTasks);
+		} else {
+			const stringedTasks = JSON.stringify(tasks);
+			localStorage.setItem('tasks', stringedTasks);
+		}
+	}, []);
+
 	const handleChangeInput = (event) => {
 		setInput(event.target.value);
 	};
 
 	const handleSubmit = () => {
 		if (input !== '') {
+			const stringedTasks = JSON.stringify([...tasks, input]);
+			localStorage.setItem('tasks', stringedTasks);
 			setTasks([...tasks, input]);
 			setInput('');
 		} else {
-			alert('Введите что нибудь!');
+			alert('Write some text!');
 		}
 	};
 
@@ -23,6 +37,8 @@ export default function App() {
 		const filteredArray = tasks.filter((task, index) => {
 			return index !== taskIndex;
 		});
+		const stringedTasks = JSON.stringify(filteredArray);
+		localStorage.setItem('tasks', stringedTasks);
 
 		setTasks(filteredArray);
 	};
